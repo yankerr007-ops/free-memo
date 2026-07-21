@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}המזכרים שלי - MemoCraft{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- טופס יצירת מזכר -->
+    <div class="bg-slate-900/80 border border-indigo-500/20 backdrop-blur-xl p-6 rounded-2xl shadow-xl">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <span>✏️</span> כתיבת מזכר חדש
+        </h2>
+        <form action="{{ url_for('add_memo') }}" method="POST" class="space-y-4">
+            <textarea name="content" rows="3" required placeholder="כתוב כאן את המזכר החדש שלך..."
+                class="w-full bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition resize-none"></textarea>
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/20 transition duration-200">
+                    שמור מזכר
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- רשימת מזכרים -->
+    <div>
+        <h3 class="text-md font-bold text-slate-400 mb-4 flex items-center gap-2">
+            <span>📌</span> המזכרים השמורים שלך ({{ memos|length }})
+        </h3>
+
+        {% if memos %}
+            <div class="grid gap-4 md:grid-cols-2">
+                {% for memo in memos %}
+                    <div class="bg-slate-900/60 border border-slate-800 hover:border-indigo-500/30 p-5 rounded-xl flex flex-col justify-between transition duration-200 group">
+                        <p class="text-slate-200 whitespace-pre-wrap leading-relaxed">{{ memo.content }}</p>
+                        
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-500">
+                            <span>{{ memo.created_at.strftime('%d/%m/%Y %H:%M') if memo.created_at else '' }}</span>
+                            <form action="{{ url_for('delete_memo', memo_id=memo.id) }}" method="POST" onsubmit="return confirm('האם למחוק את המזכר?');">
+                                <button type="submit" class="text-slate-500 hover:text-rose-400 transition flex items-center gap-1">
+                                    <span>🗑️</span> מחק
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl">
+                <p class="text-slate-400 text-base mb-1">אין לך מזכרים עדיין 📭</p>
+                <p class="text-slate-600 text-sm">השתמש בטופס למעלה כדי ליצור את המזכר הראשון שלך.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
